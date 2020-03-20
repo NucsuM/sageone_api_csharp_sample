@@ -4,6 +4,7 @@
 @inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
 @{
     ViewData["Title"] = "Response";
+    ViewData["jsonResponseBody"] = "'" + @HttpContextAccessor.HttpContext.Session.GetString("responseContent") + "'";
 }
 
 @if (Model.partialAccessTokenAvailable == "1" && Model.partialResposeIsAvailable == "1" && Model.clientApplicationConfigNotFound == "0") {
@@ -12,7 +13,7 @@
   <div class="field">
     <label class="field__label">Response Status</label>
     <p class="field__help">
-      Returned in <strong>@HttpContextAccessor.HttpContext.Session.GetString("responseTimespan")</strong> seconds 
+      Returned in <strong>@HttpContextAccessor.HttpContext.Session.GetString("responseTimespan")</strong> seconds
     </p>
     <div class="field__body">
       <input class="field__input" readonly value="@HttpContextAccessor.HttpContext.Session.GetString("responseStatusCode")" />
@@ -22,7 +23,14 @@
   <div class="field">
     <label class="field__label">Response Body</label>
     <div class="field__body">
-      <textarea class="field__input response__body" readonly>@HttpContextAccessor.HttpContext.Session.GetString("responseContent")</textarea>
+      <textarea class="field__input response__body" id="response__body" readonly></textarea>
+      <script>
+        (function() {
+          var jsonContent = @Html.Raw(ViewData["jsonResponseBody"]);
+          var prettyJsonContent = JSON.stringify(JSON.parse(jsonContent), null, 2);
+          document.getElementById("response__body").value = prettyJsonContent;
+        }) ();
+      </script>
     </div>
   </div>
 </div>
